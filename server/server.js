@@ -22,4 +22,9 @@ app.get('/', (req, res) => res.send("API Working fine"));
 app.use('/api/auth', authRouter)
 app.use('/api/user', userRouter)
 
-app.listen(port, () => console.log(`Server started on PORT:${port}`));
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(port, () => console.log(`Server started on PORT:${port}`));
+}
+
+export default app;
