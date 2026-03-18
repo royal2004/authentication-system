@@ -1,7 +1,12 @@
 import jwt from 'jsonwebtoken';
 
 const userAuth = async (req, res, next) => {
-    const { token } = req.cookies;
+    // Support both cookie (local dev) and Authorization header (cross-domain production)
+    let token = req.cookies?.token;
+
+    if (!token && req.headers.authorization?.startsWith('Bearer ')) {
+        token = req.headers.authorization.split(' ')[1];
+    }
 
     if (!token) {
         return res.json({ success: false, message: 'Not Authorized. Login Again' })
@@ -12,8 +17,6 @@ const userAuth = async (req, res, next) => {
         const tokenDecode = jwt.verify(token, process.env.JWT_SECRET);
 
         if (tokenDecode.id) {
-            // req.body = req.body || {};
-            // req.body.userId = tokenDecode.id;
             req.user = { id: tokenDecode.id };
         } else {
             return res.json({ success: false, message: 'Not Authorized. Login Again' })
@@ -26,4 +29,4 @@ const userAuth = async (req, res, next) => {
     }
 }
 
-export default userAuth;
+export default userAuth;

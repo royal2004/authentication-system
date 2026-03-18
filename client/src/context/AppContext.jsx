@@ -12,8 +12,23 @@ export const AppContextProvider = (props) => {
     const [isLoggedin, setIsLoggedin] = useState(false)
     const [userData, setUserData] = useState(false)
 
+    // Attach token from localStorage to every request
+    const setAxiosToken = (token) => {
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        } else {
+            delete axios.defaults.headers.common['Authorization'];
+        }
+    }
+
     const getAuthState = async () => {
         try {
+            // Restore token from localStorage on page load
+            const savedToken = localStorage.getItem('token');
+            if (savedToken) {
+                setAxiosToken(savedToken);
+            }
+
             const { data } = await axios.get(backendUrl + '/api/auth/is-auth')
             if (data.success) {
                 setIsLoggedin(true)
@@ -36,8 +51,9 @@ export const AppContextProvider = (props) => {
     useEffect(() => {
         getAuthState();
     }, [])
+
     const value = {
-        backendUrl, isLoggedin, setIsLoggedin, userData, setUserData, getUserData
+        backendUrl, isLoggedin, setIsLoggedin, userData, setUserData, getUserData, setAxiosToken
     }
 
     return (
@@ -45,4 +61,4 @@ export const AppContextProvider = (props) => {
             {props.children}
         </AppContext.Provider>
     )
-}
+}

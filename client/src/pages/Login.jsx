@@ -9,7 +9,7 @@ const Login = () => {
 
   const navigate = useNavigate()
 
-  const { backendUrl, setIsLoggedin, getUserData } = useContext(AppContext)
+  const { backendUrl, setIsLoggedin, getUserData, setAxiosToken } = useContext(AppContext)
 
   const [state, setState] = useState('Sign Up')
   const [name, setName] = useState('')
@@ -26,6 +26,8 @@ const Login = () => {
         const { data } = await axios.post(backendUrl + '/api/auth/register', { name, email, password })
 
         if (data.success) {
+          localStorage.setItem('token', data.token);
+          setAxiosToken(data.token);
           setIsLoggedin(true)
           getUserData()
           navigate('/')
@@ -36,6 +38,8 @@ const Login = () => {
         const { data } = await axios.post(backendUrl + '/api/auth/login', { email, password })
 
         if (data.success) {
+          localStorage.setItem('token', data.token);
+          setAxiosToken(data.token);
           setIsLoggedin(true)
           getUserData()
           navigate('/')

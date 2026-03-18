@@ -8,7 +8,7 @@ import { toast } from 'react-toastify'
 const Navbar = () => {
 
     const navigate = useNavigate()
-    const { userData, backendUrl, setUserData, setIsLoggedin } = useContext(AppContext)
+    const { userData, backendUrl, setUserData, setIsLoggedin, setAxiosToken } = useContext(AppContext)
 
     const sendVerificationOtp = async () => {
         try {
@@ -34,6 +34,9 @@ const Navbar = () => {
             const { data } = await axios.post(backendUrl + '/api/auth/logout')
             data.success && setIsLoggedin(false)
             data.success && setUserData(false)
+            // Clear token from localStorage
+            localStorage.removeItem('token');
+            setAxiosToken(null);
             navigate('/')
         } catch (error) {
             toast.error(error.message)
